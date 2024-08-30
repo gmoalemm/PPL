@@ -1,0 +1,66 @@
+#lang racket/base
+
+; Signature: append(l1 l2)
+; Type: [List * List -> List]
+; Purpose: concatenate two lists
+; Pre-condition: true
+; Tests: (append '() '(1 2 3)) => '(1 2 3) | (append '(4 5 6) '(1 2 3)) => '(4 5 6 1 2 3)
+(define append
+  (lambda (l1 l2)
+    (if (eq? '() l1)
+    l2
+    (cons (car l1) (append (cdr l1) l2)))))
+
+; Signature: reverse(l)
+; Type: [List -> List]
+; Purpose: reverse a list
+; Pre-condition: true
+; Tests: (reverse '()) => '() | (reverse '(4 5 6)) => '(6 5 4)
+(define reverse
+  (lambda (l)
+    (if (eq? '() l)
+        l ; l is empty, no need to reverse
+        (if (eq? '() (cdr l))
+            l ; l has only 1 element
+            (if (list? (cdr l))
+                (append (reverse (cdr l)) (cons (car l) '()))
+                (cons (cdr l) (car l)))))))
+
+; Signature: dup(item cnt)
+; Type: [T * Number -> List(T)]
+; Purpose: make a list of (cnt) items
+; Pre-condition: cnt >= 0
+; Tests: (dup 5 3) => '(5 5 5)
+(define dup
+  (lambda (item cnt)
+    (if (zero? cnt)
+        '()
+        (cons item (dup item (- cnt 1))))))
+
+; Signature: rotate(l)
+; Type: [List -> List]
+; Purpose: move the first item to the end.
+; Pre-condition: true
+; Tests: (rotate '(1 2 3)) => '(2 3 1)
+(define rotate
+  (lambda (l)
+    (if (eq? '() l)
+        l
+        (if (eq? '() (cdr l))
+            l 
+            (append (cdr l) (cons (car l) '()))))))
+
+; Signature: duplicate-items(lst dup-count)
+; Type: [List * List(Number) -> List]
+; Purpose:  duplicates each item of lst according to the number
+;           defined in the same position in dup-count
+; Pre-condition:  dup-count contains numbers and is not empty
+; Tests: (duplicate-items '(1 2 3) '(3 2)) => (1 1 1 2 2 3 3 3) 
+(define duplicate-items
+    (lambda (lst dup-count)
+      (if (eq? '() lst)
+          lst
+          (if (eq? '() (cdr lst))
+              (dup (car lst) (car dup-count))
+              (append (dup (car lst) (car dup-count)) (duplicate-items (cdr lst) (rotate dup-count)))    
+))))
